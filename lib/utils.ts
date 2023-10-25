@@ -1,4 +1,4 @@
-import { PriceHistoryItem, Product } from "@/stypes";
+import { PriceHistoryItem, Product } from "@/types";
 
 const Notification = {
   WELCOME: "WELCOME",
