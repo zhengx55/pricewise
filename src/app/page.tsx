@@ -31,7 +31,7 @@ export default async function Home() {
               convert, engage, and retain more.
             </p>
 
-            <SearchBƒar />
+            <SearchBar />
           </div>
 
           <HeroCarousel />
