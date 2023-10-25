@@ -24,8 +24,10 @@ const isValidAmazonProductURL = (url: string): boolean => {
 const SearchBar = (props: Props) => {
   const [searchPrompt, setSearchPrompt] = useState("");
   const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(searchPrompt);
     const isVlidLink = isValidAmazonProductURL(searchPrompt);
     if (!isVlidLink) return;
     try {
@@ -50,7 +52,11 @@ const SearchBar = (props: Props) => {
         placeholder="Enter product link"
         className="searchbar-input"
       />
-      <button type="button" className="searchbar-btn">
+      <button
+        type="submit"
+        className="searchbar-btn"
+        disabled={searchPrompt === ""}
+      >
         {loading ? "Searching..." : "Search"}
       </button>
     </form>
