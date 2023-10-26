@@ -7,23 +7,22 @@ import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
 import { Product as ProductType, User } from "@/types";
 import { generateEmailBody } from "../nodemailer";
 
-export async function scrapeAndStoreProduct(product: string) {
-  if (!product) return;
+export async function scrapeAndStoreProduct(productId: string) {
+  if (!productId) return;
   try {
     connectToDB();
-    const scrapedProduct = await scrapeAmazonProduct(product);
+    const scrapedProduct = await scrapeAmazonProduct(productId);
     if (!scrapedProduct) return;
     // store product into database
     const existingProduct = await Product.findOne({ url: scrapedProduct.url });
-    let result;
+    let product = scrapedProduct;
     if (existingProduct) {
-      const updatedPriceHistory = [
+      const updatedPriceHistory: any = [
         ...existingProduct.priceHistory,
-        {
-          price: scrapedProduct.currentPrice,
-        },
+        { price: scrapedProduct.currentPrice },
       ];
-      result = {
+
+      product = {
         ...scrapedProduct,
         priceHistory: updatedPriceHistory,
         lowestPrice: getLowestPrice(updatedPriceHistory),
@@ -31,16 +30,16 @@ export async function scrapeAndStoreProduct(product: string) {
         averagePrice: getAveragePrice(updatedPriceHistory),
       };
     }
+
     const newProduct = await Product.findOneAndUpdate(
       { url: scrapedProduct.url },
-      result,
+      product,
       { upsert: true, new: true }
     );
-    console.log(newProduct);
 
     revalidatePath(`/products/${newProduct._id}`);
-  } catch (error) {
-    throw new Error(`Failed to scrape product: ${product}`);
+  } catch (error: any) {
+    throw new Error(`Failed to scrape product: ${error.message}`);
   }
 }
 
